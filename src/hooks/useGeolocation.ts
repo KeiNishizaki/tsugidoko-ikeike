@@ -15,37 +15,43 @@ export const useGeolocation = () => {
         loading: false,
     });
 
-    const fetchLocation = useCallback(() => {
+    const fetchLocation = useCallback((): Promise<{lat: number, lng: number}> => {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        if (!navigator.geolocation) {
-            setState((prev) => ({ ...prev, loading: false, error: 'Geolocation is not supported' }));
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setState({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                    error: null,
-                    loading: false,
-                });
-            },
-            (error) => {
-                setState({
-                    lat: null,
-                    lng: null,
-                    error: error.message,
-                    loading: false,
-                });
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                const errorMsg = 'Geolocation is not supported';
+                setState((prev) => ({ ...prev, loading: false, error: errorMsg }));
+                reject(new Error(errorMsg));
+                return;
             }
-        );
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setState({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        error: null,
+                        loading: false,
+                    });
+                    resolve({ lat: position.coords.latitude, lng: position.coords.longitude });
+                },
+                (error) => {
+                    setState({
+                        lat: null,
+                        lng: null,
+                        error: error.message,
+                        loading: false,
+                    });
+                    reject(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        });
     }, []);
 
     return { ...state, fetchLocation };

@@ -1,11 +1,13 @@
 export interface Location {
     id: string;
     name: string;
-    category: 'izakaya' | 'cafe' | 'karaoke' | 'arcade' | 'bar';
+    category: string;
     distance: string; // e.g. "300m"
     walkTime: string; // e.g. "4分"
     lat: number;
     lng: number;
+    image?: string;
+    address?: string;
 }
 
 export const mockLocations: Location[] = [
