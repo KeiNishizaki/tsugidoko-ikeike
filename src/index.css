@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-pink: #ff2a6d;
+  --color-neon-blue: #05d9e8;
+  --color-neon-purple: #9000ff;
+  --color-dark-bg: #09090b;
+}
+
+@layer base {
+  body {
+    @apply bg-dark-bg text-white font-sans antialiased overflow-hidden selection:bg-blue-500 selection:text-white;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+  }
+}
