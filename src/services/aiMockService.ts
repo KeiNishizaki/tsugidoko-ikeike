@@ -2,31 +2,35 @@ import { type VisitingContext, type AiDecisionResult } from '../types/context';
 
 export class AiMockService {
     static async getDecision(context: VisitingContext): Promise<AiDecisionResult> {
-        // Simulate Azure OpenAI latency (1.5 - 2.5 seconds)
-        const delay = Math.random() * 1000 + 1500;
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        // デプロイしたAzure FunctionsのURL
+        // ※ローカルでテストする場合は 'http://localhost:7071/api/decide' に変更してください
+        const apiUrl = 'https://func-tugidokoikeike-hkdac8c8augvbng6.japanwest-01.azurewebsites.net/api/decide?code=RjOdu2OCLJmhYTrTjEVjpLKX3s4hgnkiedet-wfgPgJ-AzFutUUG9Q==';
 
-        // Basic mock logic based on inputs to simulate AI "reasoning"
-        let reason = '';
-        let keyword = '';
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(context), // C#側で受け取れるようにJSON化して送信
+            });
 
-        if (context.drunkenness > 80) {
-            reason = `酔い度${context.drunkenness}だと！？もうベロベロじゃないか！これ以上飲ませるわけにはいかない。大人しくラーメン食って帰れ！`;
-            keyword = 'ラーメン 深夜';
-        } else if (context.recentAction.includes('麻雀') || context.recentAction.includes('ゲーム')) {
-            reason = `${context.groupType} ${context.participants}人で${context.recentAction}終わり、かつシラフなら、頭を使った後はここに行くしかない。〇〇ラーメンに行け！いや、肉でもいいぞ！`;
-            keyword = '焼肉 または ラーメン';
-        } else if (context.request.includes('静か')) {
-            reason = `「${context.request}」という弱気な要望を受信した。仕方がない、${context.participants}人でしっぽり語れる静かな場所を探してやる。感謝しろ！`;
-            keyword = '静か カフェ または バー';
-        } else if (context.participants >= 5) {
-            reason = `${context.participants}人の大所帯か…！全員が座れる広い居酒屋に叩き込んでやる！騒いでも怒られない場所だ！`;
-            keyword = '大人数 居酒屋 ワイワイ';
-        } else {
-            reason = `お前らの状況（${context.groupType} ${context.participants}人, 酔い度${context.drunkenness}）なら、次はここ一択だ！思考停止して向かえ！`;
-            keyword = '居酒屋 または バー';
+            if (!response.ok) {
+                throw new Error(`AI API Error: ${response.status}`);
+            }
+
+            // Azure Functions（C#）経由で生成されたAIの回答を受け取る
+            const data: AiDecisionResult = await response.json();
+            return data;
+
+        } catch (error) {
+            console.error("AI呼び出しエラー:", error);
+            
+            // 通信エラーでアプリが止まって「ぐだる」のを防ぐためのフォールバック
+            return {
+                keyword: '居酒屋',
+                reason: '電波が悪いのかAIがサボっている！細かいことは気にするな、目の前にある一番近い居酒屋に飛び込め！'
+            };
         }
-
-        return { keyword, reason };
     }
 }
