@@ -10,15 +10,15 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'api' # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'api' # 関数アプリのコードが入っているフォルダ
+  DOTNET_VERSION: '8.0.x' 
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -32,9 +32,9 @@ jobs:
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output
-          popd
+          # 確実にapiフォルダに移動してビルドを実行
+          cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          dotnet build --configuration Release --output ../output_dist
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -49,5 +49,4 @@ jobs:
         with:
           app-name: 'func-tugidokoIkeIke'
           slot-name: 'Production'
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          
+          package: './output_dist' # ビルドされた成果物の場所を指定
