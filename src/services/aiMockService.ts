@@ -28,6 +28,7 @@ export class AiMockService {
             
             // 通信エラーでアプリが止まって「ぐだる」のを防ぐためのフォールバック
             return {
+                category: '最寄りの居酒屋',
                 keyword: '居酒屋',
                 reason: '電波が悪いのかAIがサボっている！細かいことは気にするな、目の前にある一番近い居酒屋に飛び込め！'
             };

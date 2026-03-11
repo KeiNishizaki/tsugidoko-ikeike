@@ -10,5 +10,6 @@ export interface VisitingContext {
 
 export interface AiDecisionResult {
     keyword: string;
+    category: string;
     reason: string;
 }
