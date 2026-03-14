@@ -23,8 +23,14 @@ export const TopScreen: React.FC<TopScreenProps> = ({ onStart, isLocating }) => 
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
+                className="flex flex-col items-center"
             >
-                <h1 className="text-5xl font-black mb-4 text-white leading-tight">
+                <img 
+                    src="/Icon_DokoIke.png" 
+                    alt="Tsugi-Doko IkeIke Icon" 
+                    className="w-48 h-48 md:w-56 md:h-56 object-contain mb-6 drop-shadow-2xl rounded-[2rem]"
+                />
+                <h1 className="text-3xl md:text-4xl font-black mb-4 text-white leading-tight">
                     Tsugi-Doko<br />
                     <span className="text-blue-400">IkeIke</span>
                 </h1>
